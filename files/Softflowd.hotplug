@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[ -n "$DEVICE" ] || exit 0
+
+[ "$ACTION" = ifup ] && /etc/init.d/softflowd enabled && {
+        /etc/init.d/softflowd reload
+	        logger -t softflowd "Reloading softflowd due to $ACTION of $INTERFACE ($DEVICE)"
+		}
