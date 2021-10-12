@@ -1,0 +1,185 @@
+#!/bin/sh /etc/rc.common
+#  Copyright (C) 2007-2011 OpenWrt.org/Copyright (C) 2021 RuralRoots
+
+# set (s)hellcheck exceptions
+# shellcheck disable=SC2034,SC2154,SC3043,SC3047,SC3037,SC3045
+
+USE_PROCD=1
+START=90
+
+Run_Dir="/var/run/softflowd"
+Ctl_Dir="/usr/sbin/softflowctl"
+
+if [ -n "$(type -t extra_command)" ]
+then
+	extra_command	"statistics" "statistics [ctlsock] - Show Interface Statistics"
+	extra_command	"dump" "dump [ctlsock] - Dump Interface Flows"
+	extra_command	"pause" "pause [ctlsock] - Pause Interface Flow Monitoring"
+	extra_command	"resume" "resume [ctlsock] - Resume Interface Flow Monitoring"
+	extra_command "expire" "expire [ctlsock] - Expire Interface Flows"
+	extra_command "delete" "delete [ctlsock] - Delete All Interface Flows"
+	extra_command	"timeouts" "timeouts [ctlsock] - Show Interface Timeout Settings"
+	extra_command	"active" "active - Show All Active Monitoring Instances"
+	extra_command	"shutdown" "shutdown - Exit Gracefully & Close softflowd"
+	extra_command	"update" "update [ctlsock] [value] - Enable/Disable an Interface & Restart softflowd Monitoring"
+	extra_command	"debugUp" "debugUp [ctlsock] - Increase softflowd debug verbosity"
+	extra_command	"debugDown" "debugDown [ctlsock] - Decrease softflowd debug verbosity"
+else
+
+EXTRA_COMMANDS="statistics dump pause resume expire delete timeouts active shutdown update debugUp debugDown"
+EXTRA_HELP="
+			SOFTFLOWCTL COMMANDS
+	Syntax: /etc/init.d/softlowd <Command> <Ctlsock> <value>
+
+	statistics  ->  Show Interface Statistics
+	dump	    ->  Dump Interface Flows
+	pause       ->  Pause Interface Flow Monitoring
+	resume      ->  Resume Interface Flow Monitoring
+	expire      ->  Expire Interface Flows
+	delete	    ->	Delete All Interface Flows
+	timeouts    ->  Show Interface Timeout Settings
+	active	    ->  Show All Active Monitoring Instances
+	shutdown    ->	Exit Gracefully & close softflowd
+	update      ->  Enable/Disable An Interface & Restart softflowd Monitoring
+	debugUp	    ->	Increase softflowd debug verbosity
+	debugDown   ->	Decrease softflowd debug verbosity"
+fi
+
+append_bool() {
+	local section="$1"
+	local option="$2"
+	local value="$3"
+	local _val
+	config_get_bool _val "$section" "$option" '0'
+	[ "$_val" -gt 0 ] && append args "$value"
+}
+
+append_string() {
+	local section="$1"
+	local option="$2"
+	local value="$3"
+	local _val
+	config_get _val "$section" "$option"
+	[ -n "$_val" ] && append args "$value $_val"
+}
+
+run_cmd() {
+ 	if [ -e $Run_Dir/"${iface}.ctl" ]
+        then
+	echo -e "$msg"
+        $Ctl_Dir -c $Run_Dir/"$iface".ctl "$command" 2> /dev/null
+	else
+	echo -e "\n\tInvalid or Missing Control Socket\n\nPlease enter valid ctlsock name to run the command\n"
+	fi
+}
+
+start_instance() {
+	local section="$1"
+	config_get_bool enabled "$section" 'enabled' '0'
+	[ "$enabled" -gt 0 ] || return 1
+
+	args=""
+	append args "-c /var/run/softflowd/$section.ctl"
+	append_string "$section" 'interface' '-i'
+	append_string "$section" 'pcap_file' '-r'
+	append_string "$section" 'timeout1' '-t'
+	append_string "$section" 'timeout2' '-t'
+	append_string "$section" 'timeout3' '-t'
+	append_string "$section" 'timeout4' '-t'
+	append_string "$section" 'timeout5' '-t'
+	append_string "$section" 'timeout6' '-t'
+	append_string "$section" 'timeout7' '-t'
+	append_string "$section" 'timeout8' '-t'
+	append_string "$section" 'max_flows' '-m'
+	append_string "$section" 'host_port' '-n'
+	append_string "$section" 'export_version' '-v'
+	append_string "$section" 'hoplimit' '-L'
+	append_string "$section" 'tracking_level' '-T'
+	append_string "$section" 'sampling_rate' '-s'
+	append_bool   "$section" 'track_ipv6' '-6'
+
+	procd_open_instance
+	procd_set_param command /usr/sbin/softflowd -d $args
+	echo -e "/usr/sbin/softflowd -d \"$args\"" >> "$Run_Dir"/cli
+	procd_set_param respawn
+	procd_add_interface_trigger "interface.*.up"
+	procd_close_instance
+}
+
+start_service() {
+	mkdir -p /var/run/softflowd
+	config_load 'softflowd'
+	config_foreach start_instance
+}
+
+statistics() {
+	command="statistics" && iface=$1 && msg="\n\tShowing $iface Statistics\n" && run_cmd
+}
+
+dump() {
+	command="dump-flows" && iface=$1 && msg="\n\tDumping $iface Flows\n" && run_cmd
+}
+
+pause() {
+	command="stop-gather" && iface=$1 && msg="\n\tPausing $iface Flow Monitoring\n" && run_cmd
+}
+
+resume() {
+	command="start-gather" && iface=$1 && msg="\n\tResuming $iface Flow Monitoring\n" && run_cmd
+}
+
+expire() {
+	command="expire-all" && iface=$1 && msg="\n\tExpiring All $iface Flows\n" && run_cmd
+}
+
+delete() {
+	command="delete-all" && iface=$1 && msg="\n\tImmediately Deleting All $iface Flows\n" && run_cmd
+}
+
+timeouts() {
+	command="timeouts" && iface=$1 && msg="\n\tShowing Current $iface Timeout Values\n" && run_cmd
+}
+
+active() {
+	echo -e "\n  Showing All Active Monitoring Instances:\n"
+	echo -e "Instance(s)\n===========" && find $Run_Dir/ -name "*.ctl" -exec basename \
+{} .ctl \; 2> /dev/null
+	echo -e "\n   PID(s)\n===========" && pgrep softflowd
+}
+
+shutdown() {
+	echo -e "\n\tShutting Down All Instances\n"
+	config_load softflowd
+	config_foreach cleanup
+	/etc/init.d/softflowd stop 2> /dev/null
+	echo -e "\n\tCleaning Up Run Environment\n\n"
+	rm -r $Run_Dir 2> /dev/null
+	echo -e "\t\tD O N E\t. . . .\n"
+}
+
+cleanup() {
+	$Ctl_Dir -c $Run_Dir/"$1".ctl shutdown 2> /dev/null
+}
+
+debugUp() {
+	command="debug+" && iface=$1 && msg="Increasing debug verbosity on $iface instance" && run_cmd
+}
+
+debugDown() {
+	command="debug-" && iface=$1 && msg="Decreasing debug verbosity on $iface instance" && run_cmd
+}
+
+update() {
+	local socket="$1"
+	local updown="$2"
+	if [ -n "${updown}" ]
+        then
+		shutdown
+        	uci set softflowd."$socket".enabled="$updown"
+		echo -e "\n\tRestarting softflowd With Updated Configuration"
+		/etc/init.d/softflowd start && sleep 1 && /etc/init.d/softflowd active
+		uci revert softflowd."$socket".enabled
+	else
+		echo -e "\n\tMissing Parameter(s)\n\nPlease enter ctlsock name and action (1=enable 2=disable)\n"
+	fi
+}
