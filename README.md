@@ -16,7 +16,7 @@ Damien Miller <djm@mindrot.org>
 Developer website  http://mindrot.org
 
 Current maintainer:
-Hitoshi Irino <irino@sfc.wide.ad.jp>     https://github.com/irino/softflowd/
+Hitoshi Irino <irino@sfc.wide.ad.jp><br>https://github.com/irino/softflowd/<br>
 Issues to https://github.com/irino/softflowd/issues
 
 Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
