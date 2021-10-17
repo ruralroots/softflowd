@@ -57,7 +57,7 @@ Commands can now be executed by entering:<br>`sf [command] [ctlsock] [option] [b
 
 Entering: full pathname `/etc/init.d/softflowd` or *alias* without a command on the comand line will prompt with available commands.
 
-### softflowd Config File – etc/config/softflowd ###
+### softflowd Config File – /etc/config/softflowd ###
 
 The first line in each configured interface section (`config ctlsock`) delineates each configuration section and declares the softflowd *Control Socket File* name. Softflowd listens on this **Control Socket** for ***Softflowctl*** *Runtime Job Control Commands*. Multiple configuration sections for the various interfaces configured in OpenWrt can be created, and support for concurrent monitoring instances on different interfaces is possible.
 
