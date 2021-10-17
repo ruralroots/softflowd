@@ -24,7 +24,7 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 
 ## Installation & Usage ##
 * Update your local opkg repository (`opkg update`)
-* Install Softflowd (`opkg install softflowd`). The Softflowd service is enabled by default and a sample config file is included in `etc/config/softflowd`
+* Install Softflowd (`opkg install softflowd`). The Softflowd service is enabled by default and a sample config file is included in `/etc/config/softflowd`
 * The important Softflowctl job control functions are called from CLI.
 * Support for filtering flow data with Berkeley Packet Filter **bpf(4)** is not supported.
 
