@@ -55,7 +55,7 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 
 Commands can now be executed by entering:<br>`sf [command] [ctlsock] [option] [bool]`
 
-Entering: full pathname `etc/init.d/softflowd` or *alias* without a command on the comand line will prompt with available commands.
+Entering: full pathname `/etc/init.d/softflowd` or *alias* without a command on the comand line will prompt with available commands.
 
 ### softflowd Config File – etc/config/softflowd ###
 
@@ -79,7 +79,7 @@ track_ipv6 |0|Set to 1  to Track ipv6 regardless whether or not it is supported.
 sampling_rate|100|Periodic sampling rate (denominator).<br>Note that this is a *sampling rate* ie. if *sampling_rate* value is set to 100, 1 of every 100 flow packets will be sampled.
 
 ## Softflowctl Usage
-***Syntax:***`etc/init.d/softflowd [command] [ctlsock] [bool]`
+***Syntax:***`/etc/init.d/softflowd [command] [ctlsock] [bool]`
 
 The examples below use my shell command alias notation (see ***Hint*** above)
 
