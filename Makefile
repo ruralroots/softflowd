@@ -35,7 +35,9 @@ define Package/softflowd
 endef
 
 define Package/softflowd/description
-	Software netflow exporter
+	Software Flow Processor & Exporter of Cisco's
+	Netflow traffic accounting protocol with
+	Softflowctl runtime implementation.
 endef
 
 define Package/softflowd/install
