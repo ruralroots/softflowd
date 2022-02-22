@@ -144,7 +144,6 @@ active() {
 	echo -e "\n  Showing All Active Monitoring Instances:\n"
 	echo -e "Instance(s)\n===========" && find $Run_Dir/ -name "*.ctl" -exec basename \
 {} .ctl \; 2> /dev/null
-	echo -e "\n   PID(s)\n===========" && pgrep softflowd
 }
 
 shutdown() {
