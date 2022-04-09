@@ -113,7 +113,7 @@ The examples below use the example shell command alias notation (see ***Hint*** 
 
 * Display all ***Active*** Interfaces:    `sf active`
 
-  * Reports all currently active interfaces and their PIDs.
+  * Reports all currently active interfaces.
 
 * ***Shutdown*** All Monitored Instances Gracefully and Close softflowd:<br>`sf shutdown`
 
