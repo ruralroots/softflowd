@@ -134,11 +134,14 @@ The examples below use the example shell command alias notation (see ***NOTE:***
 
 * ***Update*** *Enable/Disable* An Interface and Restart Softflowd Monitoring:
 
-	The *update* command takes a boolean operator appended to the command line<br>1=Enable/0=Disable
+     The *update* command takes a boolean operator appended to the command line<br>     1=Enable/0=Disable
+	
+* **Note:** Interfaces must be pre-configured in `/etc/config/softflowd` 
+	
+	* This runtime command allows the user to  *enable* and begin monitoring a disabled interface, or *disable* and shutdown a currently active interface gracefully, and restart Softflowd.
+	
+	 * To enable or disable an interface to be monitored permanently, you must edit this option in the `/etc/config/softflowd` file.
 
 	Enable wan interface `sf update wan 1`
 
 	Disable vpn0 interface  `sf update vpn0 0`
-	 * This runtime command allows the user to *temporarily enable* and begin monitoring a currently disabled interface, or *temporarily disable* and shutdown a currently active interface gracefully, and restart Softflowd.
-
-	 * To enable or disable an interface to be monitored permanently, you must edit this option in the `/etc/config/softflowd` file.
