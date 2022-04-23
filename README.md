@@ -123,7 +123,8 @@ The examples below use the example shell command alias notation (see ***NOTE:***
 
   * To immediately terminate softflowd without expiring, processing, and exporting active flows, issue:<br>`sf stop && sf shutdown`  This is the equivalent of issuing the softflowctl:<br>`exit` command.
 
-* ***DebugUp/DebugDown*** Increase OR Decrease the Softflowd Debug Verbosity
+* ***DebugUp/DebugDown*** Increase OR Decrease the Softflowd Debug Verbosity. 
+* If used, the **DebugUp** or **DebugDown** command settings persist only while the named instance remains active.
 
   `sf debugUp wan`
   * Runtime Command to increase softflowd debug verbosity level of the *wan* instance.
