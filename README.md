@@ -26,7 +26,7 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 * Update your local opkg repository (`opkg update`)
 * Install Softflowd (`opkg install softflowd`). The Softflowd service is enabled by default and a sample config file is included in `/etc/config/softflowd`
 * The important Softflowctl job control functions are called from CLI.
-* Support for filtering flow data with Berkeley Packet Filter **bpf(4)** is not supported.
+* Support for filtering flow data with Berkeley Packet Filter **bpf(4)** is not supported at this time.
 
 
 ## **Softflowd/Softflowctl Available Runtime Commands**
@@ -50,7 +50,7 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 
 **Syntax:** `/etc/init.d/softflowd [command] [ctlsock] [bool]`
 
-**Hint:** You can create a persistent shortcut command alias in your shell by editing `/etc/shinit` and adding<br>
+**NOTE** You can create a persistent shortcut command alias in your shell by editing `/etc/shinit` and adding<br>
 `alias sf='/etc/init.d/softflowd'`
 
 Commands can now be executed by entering:<br>`sf [command] [ctlsock] [option] [bool]`
@@ -113,7 +113,7 @@ The examples below use the example shell command alias notation (see ***Hint*** 
 
 * Display all ***Active*** Interfaces:    `sf active`
 
-  * Reports all currently active interfaces.
+  * Reports all currently active interfaces and their corresponding ProcessID.
 
 * ***Shutdown*** All Monitored Instances Gracefully and Close softflowd:<br>`sf shutdown`
 
