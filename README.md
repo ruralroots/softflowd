@@ -50,7 +50,7 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 
 **Syntax:** `/etc/init.d/softflowd [command] [ctlsock] [bool]`
 
-**NOTE** You can create a persistent shortcut command alias in your shell by editing `/etc/shinit` and adding<br>
+**NOTE:** You can create a persistent shortcut command alias in your shell by editing `/etc/shinit` and adding<br>
 `alias sf='/etc/init.d/softflowd'`
 
 Commands can now be executed by entering:<br>`sf [command] [ctlsock] [option] [bool]`
@@ -81,7 +81,7 @@ sampling_rate|100|Periodic sampling rate (denominator).<br>Note that this is a *
 ## Softflowctl Usage
 ***Syntax:***`/etc/init.d/softflowd [command] [ctlsock] [bool]`
 
-The examples below use the example shell command alias notation (see ***NOTE*** above)
+The examples below use the example shell command alias notation (see ***NOTE:*** above)
 
 * Show ***Statistics*** for the specified monitored interface flow:<br>`sf statistics wan`
 
