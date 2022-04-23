@@ -81,7 +81,7 @@ sampling_rate|100|Periodic sampling rate (denominator).<br>Note that this is a *
 ## Softflowctl Usage
 ***Syntax:***`/etc/init.d/softflowd [command] [ctlsock] [bool]`
 
-The examples below use the example shell command alias notation (see ***Hint*** above)
+The examples below use the example shell command alias notation (see ***NOTE*** above)
 
 * Show ***Statistics*** for the specified monitored interface flow:<br>`sf statistics wan`
 
