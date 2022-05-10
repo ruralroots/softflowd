@@ -127,10 +127,10 @@ The examples below use the example shell command alias notation (see ***NOTE:***
 * If used, the **DebugUp** or **DebugDown** command settings persist only while the named instance remains active.
 
   `sf debugUp wan`
-  * Runtime Command to increase softflowd debug verbosity level of the *wan* instance.
+  * Runtime Command to increase softflowd debug verbosity level of the active *wan* instance.
 
   `sf debugDown vpn0`
-  * Runtime Command to decrease softflowd debug verbosity level of the *vpn0* instance.
+  * Runtime Command to decrease softflowd debug verbosity level of the active *vpn0* instance.
 
 * ***Update*** *Enable/Disable* An Interface and Restart Softflowd Monitoring:
 
