@@ -3,7 +3,7 @@
 ## Description
 Softflowd is a software implementation of Cisco's *NetFlow™* traffic accounting protocol. It collects and tracks traffic flows by listening on promiscuous interfaces. It is designed for minimal CPU load on busy networks.
 
-Softflowd semi-statefully tracks traffic flows recorded by listening on network interface(s) or by reading pcap packet capture files. These flows may be exported via *NetFlow™* to a collecting host or summarized within Softflowd itself.
+Softflowd semi-statefully tracks traffic flows recorded by listening on network interface(s). These flows may be exported via *NetFlow™* to a collecting host or summarized within Softflowd itself.
 
 Softflowd can also read, analyze, and export pcap packet capture files.
 
