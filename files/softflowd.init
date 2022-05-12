@@ -67,8 +67,7 @@ append_string() {
 run_cmd() {
 	if [ -e $Run_Dir/"${iface}.ctl" ]
         then
-	printf "\n\n========================================="	
-	printf '%b' "\n +++ SoftflowCtl : $command : $iface +++"
+	printf '%b' "\n\n=========================================\n +++ SoftflowCtl : $command : $iface +++"
 	printf "\n=========================================\n"	
         $Ctl_Dir -c $Run_Dir/"$iface".ctl "$command" 2> /dev/null
 	else
