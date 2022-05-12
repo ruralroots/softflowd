@@ -141,6 +141,7 @@ The examples below use the example shell command alias notation (see ***NOTE:***
 	* This runtime command allows the user to  *enable* and begin monitoring a disabled interface, or *disable* and shutdown a currently active interface gracefully, and restart Softflowd.
 	
 	 * To enable or disable an interface to be monitored permanently, you must edit this option in the `/etc/config/softflowd` file.
+	 * Triggering of a hotplug event will cause Softflowd to restart with your existing config.
 
 	Enable wan interface `sf update wan 1`
 
