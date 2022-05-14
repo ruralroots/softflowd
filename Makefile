@@ -28,7 +28,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/softflowd
   SECTION:=net
-  CATEGORY:=Network
+  CATEGORY:=netflow
   DEPENDS:=+libpcap
   TITLE:=softflowd
   URL:=https://github.com/irino/softflowd
