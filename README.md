@@ -26,8 +26,6 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 * Update your local opkg repository (`opkg update`)
 * Install Softflowd (`opkg install softflowd`). The Softflowd service is enabled by default and a sample config file is included in `/etc/config/softflowd`
 * The important Softflowctl job control functions are called from CLI.
-* Support for filtering flow data with Berkeley Packet Filter **bpf(4)** is not supported at this time.
-
 
 ## **Softflowd/Softflowctl Available Runtime Commands**
 
@@ -77,6 +75,7 @@ hoplimit ||Sets ipv4 TTL, or ipv6 hop limit to *hop_limit*.<br>Defaults to the s
 tracking_level|full|Full, proto, ip - *full* (track everything in the flow), *proto* (track source and destination and protocol), and *ip* (only track source and destination addresses)
 track_ipv6 |0|Set to 1  to Track ipv6 regardless whether or not it is supported. Currently only Netflow V9 supports IPv6. Primarily used for debugging,
 sampling_rate|100|Periodic sampling rate (denominator).<br>Note that this is a *sampling rate* ie. if *sampling_rate* value is set to 100, 1 of every 100 flow packets will be sampled.
+bpf_filter||Berkley Packet Filter https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
 
 ## Softflowctl Usage
 ***Syntax:***`/etc/init.d/softflowd [command] [ctlsock] [bool]`
