@@ -75,7 +75,7 @@ hoplimit ||Sets ipv4 TTL, or ipv6 hop limit to *hop_limit*.<br>Defaults to the s
 tracking_level|full|Full, proto, ip - *full* (track everything in the flow), *proto* (track source and destination and protocol), and *ip* (only track source and destination addresses)
 track_ipv6 |0|Set to 1  to Track ipv6 regardless whether or not it is supported. Currently only Netflow V9 supports IPv6. Primarily used for debugging,
 sampling_rate|100|Periodic sampling rate (denominator).<br>Note that this is a *sampling rate* ie. if *sampling_rate* value is set to 100, 1 of every 100 flow packets will be sampled.
-bpf_filter||Berkley Packet Filter https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
+bpf_filter||Berkeley Packet Filter https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
 
 ## Softflowctl Usage
 ***Syntax:***`/etc/init.d/softflowd [command] [ctlsock] [bool]`
