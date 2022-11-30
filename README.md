@@ -26,10 +26,10 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
 * Update your local opkg repository (`opkg update`)
 * Install Softflowd (`opkg install softflowd`) to install the Softflowd/SoftflowCtl binaries.
 * Download this repository via the Code tag and select ZIP file. Extract the contents and using SCP copy
-  * softflowd.init to /etc/init.d/softflowd
-  * softflowd.hotplug to /etc/hotplug.d/iface/40-softflowd
-  * softflowd.config to /etc/config/softflowd
-    * Start Softflowd /etc/init.d/softflowd start
+  * `softflowd.ini`t to `/etc/init.d/softflowd`
+  * `softflowd.hotplug` to `/etc/hotplug.d/iface/40-softflowd`
+  * `softflowd.config` to `/etc/config/softflowd`
+    * Start Softflowd `/etc/init.d/softflowd start`
 * The important Softflowctl job control functions are called from CLI.
 
 ## **Softflowd/Softflowctl Available Runtime Commands**
