@@ -29,7 +29,7 @@ Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
   * softflowd.init to /etc/init.d/softflowd
   * softflowd.hotplug to /etc/hotplug.d/iface/40-softflowd
   * softflowd.config to /etc/config/softflowd
-  * /etc/init.d/softflowd start
+    * Start Softflowd /etc/init.d/softflowd start
 * The important Softflowctl job control functions are called from CLI.
 
 ## **Softflowd/Softflowctl Available Runtime Commands**
