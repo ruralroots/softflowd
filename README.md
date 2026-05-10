@@ -1,152 +1,359 @@
 # Softflowd/Softflowctl – ***NetFlow™*** Flow Processor & Exporter
 
-## Description
-Softflowd is a software implementation of Cisco's *NetFlow™* traffic accounting protocol. It collects and tracks traffic flows by listening on promiscuous interfaces. It is designed for minimal CPU load on busy networks.
+> A software implementation of Cisco's NetFlow™ traffic accounting protocol for OpenWrt routers
 
-Softflowd semi-statefully tracks traffic flows recorded by listening on network interface(s). These flows may be exported via *NetFlow™* to a collecting host or summarized within Softflowd itself.
+## Table of Contents
 
-Softflowd can also read, analyze, and export pcap packet capture files.
+- [Overview](#overview)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Runtime Commands](#runtime-commands)
+- [Softflowctl Usage](#softflowctl-usage)
+- [Credits](#credits)
 
-The Softflowd package on OpenWrt supports the runtime Job Control functions of Softflowctl, a companion program to Softflowd that directly interfaces to the flow control files for each active monitoring instance.
+---
 
-Any *NetFlow™* compatible collector should work with Softflowd. A search for *NetFlow Analysis software* will yield multiple choices for various platforms, both commercial and open source. Many commercial entities provide a complimentary collector/analysis application.
+## Overview
 
-Original creator:
-Damien Miller <djm@mindrot.org>
-Developer website  http://mindrot.org
+Softflowd is a software implementation of Cisco's *NetFlow™* traffic accounting protocol designed for minimal CPU overhead. It collects and tracks traffic flows by listening on promiscuous interfaces, making it ideal for network monitoring and analysis.
 
-Current maintainer:
-Hitoshi Irino <irino@sfc.wide.ad.jp><br>https://github.com/irino/softflowd/<br>
-Issues to https://github.com/irino/softflowd/issues
+### Key Capabilities
 
-Documentation: See Linux Man Pages - softflowd(8), softflowctl(8), bpf(4)
+- **Flow Tracking**: Semi-statefully tracks traffic flows on network interfaces
+- **NetFlow Export**: Exports flow data via NetFlow to a collecting host for analysis
+- **PCAP Support**: Reads, analyzes, and exports pcap packet capture files
+- **Job Control**: Softflowctl companion program for runtime management via control sockets
+- **OpenWrt Integration**: Full integration with OpenWrt router operating system
+- **Flexible Sampling**: Configurable sampling rates and filtering options
 
+### Supported NetFlow Versions
 
-## Installation & Usage ##
-* Update your local opkg repository (`opkg update`)
-* Install Softflowd (`opkg install softflowd`) to install the Softflowd/SoftflowCtl binaries.
-* Download this repository via the Code tag and select ZIP file. Extract the contents and using SCP copy
-  * `softflowd.init` to `/etc/init.d/softflowd`
-  * `softflowd.hotplug` to `/etc/hotplug.d/iface/40-softflowd`
-  * `softflowd.config` to `/etc/config/softflowd`
-    * Start Softflowd `/etc/init.d/softflowd start`
-* The important Softflowctl job control functions are called from CLI.
+Softflowd supports NetFlow versions **1, 5, and 9**, with IPv6 support in NetFlow V9.
 
-## **Softflowd/Softflowctl Available Runtime Commands**
+### Collector Compatibility
 
-	start		->  Start softflowd Service if not configured as auto start
+Any NetFlow-compatible collector works with Softflowd. Popular options include commercial solutions and open-source tools. Search for *NetFlow Analysis software* to find collectors for your platform.
 
-			SOFTFLOWCTL RUNTIME COMMANDS
+---
 
-	statistics	->  Show Interface Statistics
-	dump	        ->  Dump Interface Flows
-	pause	 	->  Pause Interface Flow Monitoring
-	resume		->  Resume Interface Flow Monitoring
-	expire		->  Expire Interface Flows
-	delete		->  Delete All Interface Flows
-	timeouts	->  Show Interface Timeout Settings
-	active		->  Show All Active Interfaces
-	shutdown	->  Exit Gracefully & close softflowd
-	update		->  Enable/Disable An Interface & Restart softflowd Monitoring
-	debugUp         ->  Increase softflowd Debug Verbosity
-	debugDown       ->  Decrease softflowd Debug verbosity`
+## Quick Start
 
-**Syntax:** `/etc/init.d/softflowd [command] [ctlsock] [bool]`
+For experienced users, here's the minimal setup:
 
-**NOTE:** You can create a persistent shortcut command alias in your shell by editing `/etc/shinit` and adding<br>
-`alias sf='/etc/init.d/softflowd'`
+```bash
+# 1. Update repository and install
+opkg update
+opkg install softflowd
 
-Commands can now be executed by entering:<br>`sf [command] [ctlsock] [option] [bool]`
+# 2. Download and deploy configuration files
+# (Use SCP or web interface to copy files)
 
-Entering: full pathname `/etc/init.d/softflowd` or *alias* without a command on the comand line will prompt with available commands.
+# 3. Start monitoring
+/etc/init.d/softflowd start
 
-### softflowd Config File – /etc/config/softflowd ###
+# 4. Check active interfaces
+/etc/init.d/softflowd active
+```
 
-The first line in each configured interface section (`config ctlsock`) delineates each configuration section and declares the softflowd *Control Socket File* name. Softflowd listens on this **Control Socket** for ***Softflowctl*** *Runtime Job Control Commands*. Multiple configuration sections for the various interfaces configured in OpenWrt can be created, and support for concurrent monitoring instances on different interfaces is possible.
+For detailed setup, see [Installation](#installation).
 
-Please be well aware that softflowd can put a significant load on your router and collector host especially when running multiple instances in high usage environments. Use caution when configuring multiple instances to run concurrently.
-## Configuration File Options <br>
+---
 
-|Option| Default |    Description/Valid Values <cr> |
-| :---:|:---:|:--- |
-enabled|1|Interface to be monitored - enabled=1/disabled=0
-|interface||Interface to be monitored per ifconfig
-|pcap_file||    Full path to the pcap packet capture file to be analyzed. <br>Softflowd processes the whole file and displays summary information before exiting the instance.<br>**Note:**<br> *Either the host_port option OR pcap_file option MUST be configured.*|
-|timeout1<br>timeout2<br>.<br>.<br>.<br>.<br>timeout8||These values refer to the timeout overrides as explained in the softflowd(8) manpage. If entered, they override the default value for the specified flow type, otherwise the default value prevails. There is no enforcement of entry order. You may configure none, one, many, or all possible timeout overrides in any order.<br>**tcp.rst**=120s	 **tcp_fin**=300s<br>**expint**=160s	**icmp**=300s<br>  **tcp**=3600s	**maxlife**=604800s<br>**general**=3600s	**udp**=300s
-max_flows|8192|Maximum Flows – Specify the maximum number of flows to concurrently track. If exceeded, the flows which have least recently seen traffic are forcibly expired. The default setting corresponds to ~800K of working data.
-host_port||Collector IP:Port. This specifies the Host IP and Listening Port on the Host that will analyze the exported flow data. <br>**Note:**<br>*Either the host_port option OR pcap_file option MUST be configured.*
-export_version|9|NetFlow export versions 1, 5, and 9 are supported.
-hoplimit ||Sets ipv4 TTL, or ipv6 hop limit to *hop_limit*.<br>Defaults to the system TTL when exporting flows to a unicast host.
-tracking_level|full|Full, proto, ip - *full* (track everything in the flow), *proto* (track source and destination and protocol), and *ip* (only track source and destination addresses)
-track_ipv6 |0|Set to 1  to Track ipv6 regardless whether or not it is supported. Currently only Netflow V9 supports IPv6. Primarily used for debugging,
-sampling_rate|100|Periodic sampling rate (denominator).<br>Note that this is a *sampling rate* ie. if *sampling_rate* value is set to 100, 1 of every 100 flow packets will be sampled.
-bpf_filter||Berkeley Packet Filter https://en.wikipedia.org/wiki/Berkeley_Packet_Filter
+## Installation
+
+### Prerequisites
+
+- OpenWrt-based router
+- Network interface(s) available for monitoring
+- NetFlow collector (optional, for flow export)
+
+### Step-by-Step Installation
+
+1. **Update your local opkg repository:**
+   ```bash
+   opkg update
+   ```
+
+2. **Install Softflowd binaries:**
+   ```bash
+   opkg install softflowd
+   ```
+   This installs both Softflowd and Softflowctl binaries.
+
+3. **Deploy configuration files:**
+   - Download this repository (Code → Download ZIP)
+   - Extract the files
+   - Copy to your router using SCP:
+
+   ```bash
+   scp softflowd.init root@router:/etc/init.d/softflowd
+   scp softflowd.hotplug root@router:/etc/hotplug.d/iface/40-softflowd
+   scp softflowd.config root@router:/etc/config/softflowd
+   ```
+
+4. **Start Softflowd:**
+   ```bash
+   /etc/init.d/softflowd start
+   ```
+
+### Create Command Alias (Optional)
+
+Add this to `/etc/profile` or `.bashrc` for convenient shortcuts:
+
+```bash
+alias sf='/etc/init.d/softflowd'
+```
+
+Then use commands like: `sf statistics wan`
+
+---
+
+## Configuration
+
+### Configuration File Location
+
+**`/etc/config/softflowd`**
+
+Each monitored interface is defined in a `config ctlsock` section, which declares:
+- The interface to monitor
+- The control socket file name
+- Export destinations and parameters
+
+### Performance Considerations
+
+⚠️ **Warning**: Softflowd can place significant load on your router and collector host, especially when:
+- Running multiple instances
+- Operating in high-traffic environments
+- Tracking many flows with detailed sampling
+
+Use caution when configuring sampling rates and the maximum number of concurrent flows.
+
+### Configuration Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| **enabled** | `1` | Enable (1) or disable (0) interface monitoring |
+| **interface** | — | Interface name to monitor (e.g., `wan`, `lan`, `eth0`) |
+| **pcap_file** | — | Full path to pcap packet capture file to analyze. Softflowd processes the entire file and exits after displaying summary statistics. **Note**: Either `host_port` OR `pcap_file` must be specified, not both. |
+| **timeout1–timeout8** | — | Custom timeout values (see `softflowd(8)` man page). Overrides default timeouts for specific flow types. |
+| **max_flows** | `8192` | Maximum concurrent flows. When exceeded, least recently seen flows are forcibly expired. Increase for high-traffic environments. |
+| **host_port** | — | Collector address in format `IP:Port`. Specifies the NetFlow collector host. **Note**: Either `host_port` OR `pcap_file` must be specified, not both. |
+| **export_version** | `9` | NetFlow version: `1`, `5`, or `9`. Use `9` for IPv6 support. |
+| **hoplimit** | — | IPv4 TTL or IPv6 hop limit for exported flows. Defaults to system TTL for unicast export. |
+| **tracking_level** | `full` | Flow tracking detail: `full` (all fields), `proto` (source, destination, protocol), or `ip` (source and destination only). |
+| **track_ipv6** | `0` | Set to `1` to enable IPv6 tracking regardless of interface support. Mainly for debugging. |
+| **sampling_rate** | `100` | Sampling denominator. For example, `100` means sample 1 of every 100 packets. Higher values reduce data volume. |
+| **bpf_filter** | — | Berkeley Packet Filter expression to limit monitored traffic (see [BPF documentation](https://en.wikipedia.org/wiki/Berkeley_Packet_Filter)). Example: `tcp port 80` |
+
+### Configuration Example
+
+```
+config ctlsock 'wan_monitor'
+	option enabled '1'
+	option interface 'wan'
+	option host_port '192.168.1.100:2055'
+	option export_version '9'
+	option max_flows '16384'
+	option sampling_rate '100'
+	option tracking_level 'full'
+
+config ctlsock 'lan_monitor'
+	option enabled '1'
+	option interface 'lan'
+	option pcap_file '/tmp/capture.pcap'
+	option export_version '9'
+```
+
+---
+
+## Runtime Commands
+
+### Command Syntax
+
+```
+/etc/init.d/softflowd [command] [ctlsock] [bool]
+```
+
+Or using the alias: `sf [command] [ctlsock] [bool]`
+
+Omitting the command will display available commands.
+
+### Available Commands
+
+| Command | Arguments | Description |
+|---------|-----------|-------------|
+| **start** | — | Start Softflowd service if not configured for auto-start. |
+| **statistics** | `[ctlsock]` | Show interface statistics and flow counts. |
+| **dump** | `[ctlsock]` | Dump all active flows for an interface and resume monitoring. Reported only—no processing. |
+| **pause** | `[ctlsock]` | Temporarily pause flow collection on an interface. |
+| **resume** | `[ctlsock]` | Resume flow collection on a paused interface. |
+| **expire** | `[ctlsock]` | Expire all flows for an interface and process/export the data. |
+| **delete** | `[ctlsock]` | Delete all flows for an interface without processing or exporting. |
+| **timeouts** | `[ctlsock]` | Show current timeout settings for an interface. |
+| **active** | — | List all active interfaces with their process IDs. |
+| **shutdown** | — | Gracefully exit all instances, close Softflowd, and clean up the environment. All active flows are expired, processed, and exported. |
+| **update** | `[ctlsock] [0\|1]` | Enable (1) or disable (0) interface monitoring and restart. Interfaces must be pre-configured. |
+| **debugUp** | `[ctlsock]` | Increase debug verbosity for an instance. Persists only while the instance is active. |
+| **debugDown** | `[ctlsock]` | Decrease debug verbosity for an instance. Persists only while the instance is active. |
+
+---
 
 ## Softflowctl Usage
-***Syntax:***`/etc/init.d/softflowd [command] [ctlsock] [bool]`
 
-The examples below use the example shell command alias notation (see ***NOTE:*** above)
+This section provides practical examples using the alias notation. See [Quick Start](#quick-start) if you haven't created the alias yet.
 
-* Show ***Statistics*** for the specified monitored interface flow:<br>`sf statistics wan`
+### View Statistics
 
-  * Reports statistics for the specified interface flows.
+Show real-time statistics for a monitored interface:
 
-* ***Dump*** an Active Interface flow:<br>`sf dump wan`
+```bash
+sf statistics wan
+# Output: Interface statistics for the 'wan' interface
+```
 
-  * Dumps all currently active flows for the specified interface and resumes monitoring.<br>Dumped flow data is Reported - No flow processing occurs.
+### Dump Active Flows
 
-* ***Pause*** an Active Interface flow:<br>`sf pause wan`
+Export all currently active flows without disrupting monitoring:
 
-  * Temporarily Pauses flow collection for the specified interface
+```bash
+sf dump wan
+# Output: All active flows for 'wan' interface (data reported, not processed)
+```
 
-* ***Resume*** an Active Interface flow:<br>`sf resume wan`
+### Pause and Resume Monitoring
 
-  * Resumes flow collection for the specified interface
+Temporarily stop monitoring on an interface:
 
-* ***Expire*** an Active Interface flow:<br>`sf expire wan`
+```bash
+sf pause wan
+# Flow monitoring pauses
 
-  * Expires currently active flows for the specified interface and processes and exports the data.
+sf resume wan
+# Flow monitoring resumes
+```
 
-* ***Delete*** an Active Interface flow:<br>`sf delete wan`
+### Expire Flows
 
-  * Deletes currently active flows for the specified interface. No processing or exporting of the flow data occurs.
+Force expiration of active flows and process/export the data:
 
-* Displays All ***Timeout*** Values for an Active Interface:<br>`sf timeouts wan`
+```bash
+sf expire wan
+# All active 'wan' flows are processed and exported
+```
 
-  * Reports the current timeout values for the specified interface.
+### Delete Flows
 
-* Display all ***Active*** Interfaces:    `sf active`
+Discard active flows without processing:
 
-  * Reports all currently active interfaces and their corresponding ProcessID.
+```bash
+sf delete wan
+# All flows discarded (no export)
+```
 
-* ***Shutdown*** All Monitored Instances Gracefully and Close softflowd:<br>`sf shutdown`
+### View Timeout Configuration
 
-  * Exits all instances of softflowd gracefully, closes softflowd processes, and cleans up the run enviroment.
+Display timeout settings:
 
-  * All currently active interface flows are expired, processed, and exported.
+```bash
+sf timeouts wan
+# Output: Current timeout values for 'wan' interface
+```
 
-  * To immediately terminate softflowd without expiring, processing, and exporting active flows, issue:<br>`sf stop && sf shutdown`  This is the equivalent of issuing the softflowctl:<br>`exit` command.
+### List Active Interfaces
 
-* ***DebugUp/DebugDown*** Increase OR Decrease the Softflowd Debug Verbosity. 
-* If used, the **DebugUp** or **DebugDown** command settings persist only while the named instance remains active.
+Show all monitored interfaces and their process IDs:
 
-  `sf debugUp wan`
-  * Runtime Command to increase softflowd debug verbosity level of the active *wan* instance.
+```bash
+sf active
+# Output: wan (PID: 1234), lan (PID: 1235), ...
+```
 
-  `sf debugDown vpn0`
-  * Runtime Command to decrease softflowd debug verbosity level of the active *vpn0* instance.
+### Graceful Shutdown
 
-* ***Update*** *Enable/Disable* An Interface and Restart Softflowd Monitoring:
+Exit all instances and clean up:
 
-     The *update* command takes a boolean operator appended to the command line<br>     1=Enable/0=Disable
-	
-* **Note:** Interfaces must be pre-configured in `/etc/config/softflowd` 
-	
-	* This runtime command allows the user to  *enable* and begin monitoring a disabled interface, or *disable* and shutdown a currently active interface gracefully, and restart Softflowd.
-	
-	 * To enable or disable an interface to be monitored permanently, you must edit this option in the `/etc/config/softflowd` file.
-	 * Triggering of a hotplug event will cause Softflowd to restart with your existing config.
+```bash
+sf shutdown
+# All instances exit gracefully, flows are expired/exported, environment cleaned
+```
 
-	Enable wan interface `sf update wan 1`
+To **immediately terminate** without exporting flows:
 
-	Disable vpn0 interface  `sf update vpn0 0`
+```bash
+sf stop && sf shutdown
+# Equivalent to `exit` command in softflowctl
+```
+
+### Adjust Debug Verbosity
+
+Increase debug output:
+
+```bash
+sf debugUp wan
+# Debug verbosity for 'wan' instance increased
+```
+
+Decrease debug output:
+
+```bash
+sf debugDown vpn0
+# Debug verbosity for 'vpn0' instance decreased
+```
+
+**Note**: Debug settings persist only while the instance is active.
+
+### Enable/Disable Interfaces at Runtime
+
+Enable a disabled interface:
+
+```bash
+sf update wan 1
+# 'wan' interface enabled and monitoring starts
+```
+
+Disable an active interface:
+
+```bash
+sf update vpn0 0
+# 'vpn0' interface disabled and monitoring stops gracefully
+```
+
+**Important**: Interfaces must be pre-configured in `/etc/config/softflowd`. The `update` command only enables/disables existing configurations. To make changes permanent, edit the config file directly. Hotplug events trigger Softflowd restart with your config.
+
+---
+
+## Documentation
+
+For detailed information, see the Linux man pages:
+
+- **`man softflowd(8)`** - Main Softflowd daemon documentation
+- **`man softflowctl(8)`** - Softflowctl control program documentation
+- **`man bpf(4)`** - Berkeley Packet Filter documentation
+
+---
+
+## Credits
+
+**Original Creator:**
+- Damien Miller <djm@mindrot.org>
+- Developer website: http://mindrot.org
+
+**Current Maintainer:**
+- Hitoshi Irino <irino@sfc.wide.ad.jp>
+- Repository: https://github.com/irino/softflowd/
+- Issues: https://github.com/irino/softflowd/issues
+
+**OpenWrt Integration & This Repository:**
+- ruralroots
+
+---
+
+## License
+
+See LICENSE file in repository for details.
+
+---
+
+**Last Updated**: 2026-05-10
